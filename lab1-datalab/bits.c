@@ -257,22 +257,22 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-	int b16,b8,b4,b2,b1,b0;
+	int b16, b8, b4, b2, b1, b0;
   x = ((~x) & (x >> 31)) | (x & (~(x >> 31))); // make x be positive
-    
-  b16 = !!(x>>16)<<4;
-  x = x>>b16;
-  b8 = !!(x>>8)<<3;
-  x = x>>b8;
-  b4 = !!(x>>4)<<2;
-  x = x>>b4;
-  b2 = !!(x>>2)<<1;
-  x = x>>b2;
-  b1 = !!(x>>1);
-  x = x>>b1;
+
+  b16 = !!(x >> 16) << 4;
+  x = x >> b16;
+  b8 = !!(x >> 8) << 3;
+  x = x >> b8;
+  b4 = !!(x >> 4) << 2;
+  x = x >> b4;
+  b2 = !!(x >> 2) << 1;
+  x = x >> b2;
+  b1 = !!(x >> 1);
+  x = x > >b1;
   b0 = x;
-    
-	return b16 + b8 + b4 + b2 + b1 + b0 + 1;
+
+  return b16 + b8 + b4 + b2 + b1 + b0 + 1; // 1 -> sign bit
 }
 //float
 /* 
@@ -288,22 +288,22 @@ int howManyBits(int x) {
  */
 unsigned floatScale2(unsigned uf) {
   unsigned exp = (uf >> 23) & 0xff;
-	unsigned sign = uf & (1 << 31);
-	unsigned value = uf & ( 0xff | (0xff << 8) | (0x7f << 16) );
-	if (exp) {
+  unsigned sign = uf & (1 << 31);
+  unsigned value = uf & ( 0xff | (0xff << 8) | (0x7f << 16) );
+  if (exp) {
 		// exp not zero
-		if ((exp ^ 0xff)) {
+    if ((exp ^ 0xff)) {
 			// exp not 0xff
       exp = exp + 1;
-		  return sign | (exp << 23) | value;
-		}
-	}
+      return sign | (exp << 23) | value;
+    }
+  }
 
-	if ((!exp) && value) {
-		value = value << 1;
-		return sign | (exp << 23) | value;
-	}
-	return uf;
+  if ((!exp) && value) {
+    value = value << 1;
+    return sign | (exp << 23) | value;
+  }
+  return uf;
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -319,15 +319,15 @@ unsigned floatScale2(unsigned uf) {
  */
 int floatFloat2Int(unsigned uf) {
 	unsigned exp, sign, value;
-  
+
 	exp = ((uf >> 23) & 0xff);
 	if (exp > 157) return 0x80000000u;
 	if (exp < 127) return 0;
 	exp -= 127;
-  
+
   value = ((uf & 0x7fffff) | 0x800000);
 
-	if (exp > 23) value <<= exp - 23;
+  if (exp > 23) value <<= exp - 23;
   else value >>= 23 - exp;
 
   sign = (uf & (1 << 31)); 
@@ -350,7 +350,7 @@ int floatFloat2Int(unsigned uf) {
  */
 unsigned floatPower2(int x) {
   if (x > 128) return 0x7f800000;
-	if (x < -149) return 0;
-	if (x < -127) return 1 << (x + 149);
-	return (x + 127) << 23;
+  if (x < -149) return 0;
+  if (x < -127) return 1 << (x + 149);
+  return (x + 127) << 23;
 }
